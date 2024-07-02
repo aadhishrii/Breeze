@@ -1,0 +1,580 @@
+{
+  "openapi" : "3.0.2",
+  "info" : {
+    "title" : "Epiwatch API - Galaxy Team",
+    "description" : "This is the start of Galaxy Team's Epiwatch API. Currently there are",
+    "version" : "2.5.0",
+    "x-logo" : {
+      "url" : "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
+    }
+  },
+  "servers" : [ {
+    "url" : "/"
+  } ],
+  "tags" : [ {
+    "name" : "Healthcheck",
+    "description" : "Returns the API's current status"
+  }, {
+    "name" : "Article",
+    "description" : "Returns the the most relevant articles"
+  }, {
+    "name" : "Report",
+    "description" : "Returns individual reports of disease cases"
+  } ],
+  "paths" : {
+    "/healthcheck" : {
+      "get" : {
+        "tags" : [ "Healthcheck" ],
+        "summary" : "This is a test endpoint to check whether the API is up and running",
+        "operationId" : "root__get",
+        "responses" : {
+          "200" : {
+            "description" : "Successful Response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiStatusReport"
+                }
+              }
+            }
+          },
+          "503": {
+            "description" : "Server is currently unavailable",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiStatusReport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/epiwatch-api/v1/article/search/" : {
+      "get" : {
+        "tags" : [ "Article" ],
+        "summary" : "Searcharticles",
+        "operationId" : "searchArticles_epiwatch_api_v1_article_search__get",
+        "parameters" : [ {
+          "name" : "start_date",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "title" : "Timeperiod"
+          },
+          "description": "Time period must be in the format yyyy-mm-ddTHH:MM:SS. E.g 2020-06-30T18:00:00 (2020 June 30th 6pm in 24 hour format)"
+        }, {
+          "name" : "end_date",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "title" : "Timeperiod"
+          },
+          "description": "Time period must be in the format yyyy-mm-ddTHH:MM:SS. E.g 2020-06-30T18:00:00 (2020 June 30th 6pm in 24 hour format)"
+        }, {
+          "name" : "location",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "title" : "Location"
+          },
+          "description": "Must be a location found in the geonames database, otherwise it will return a 404 Not Found error for invalid error response. Currently try 'invalid location' for an invalid error response"
+
+        }, {
+          "name" : "keyterm",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "title" : "Keyterm"
+          },
+          "description": "Can be any word"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Article is successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArticleResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "400 Bad Request - Error that occurs if the start date occurs after or at the end date",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InvalidTimePeriodError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "404 Not Found - Error that occurs if the provided location is not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InvalidLocationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/epiwatch-api/v1/report/search/" : {
+      "get" : {
+        "tags" : [ "Report" ],
+        "summary" : "Searchreports",
+        "operationId" : "searchReports_epiwatch_api_v1_report_search__get",
+        "parameters" : [ {
+          "name" : "start_date",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "title" : "Timeperiod"
+          },
+          "description": "Time period must be in the format yyyy-mm-ddTHH:MM:SS. E.g 2020-06-30T18:00:00 (2020 June 30th 6pm in 24 hour format)"
+        }, {  
+          "name" : "end_date",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "title" : "Timeperiod"
+          },
+          "description": "Time period must be in the format yyyy-mm-ddTHH:MM:SS. E.g 2020-06-30T18:00:00 (2020 June 30th 6pm in 24 hour format)"
+        }, {
+          "name" : "location",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "title" : "Location"
+          },
+          "description": "Must be a location found in the geonames database, otherwise it will return a 404 Not Found error. Currently try 'invalid location' for an invalid error response"
+        }, {
+          "name" : "keyterm",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "title" : "Keyterm"
+          },
+          "description":"Can be any word"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful Response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReportResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "400 Bad Request - Error that occurs if the time period is invalid",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InvalidTimePeriodError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "404 Not Found - Error that occurs if the provided location is not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InvalidLocationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/epiwatch-api/v1/article/getArticleIds/" : {
+      "get" : {
+        "tags" : [ "Article" ],
+        "summary" : "Returns all article IDs in the database",
+        "operationId" : "get_article_ids",
+        "responses" : {
+          "200" : {
+            "description" : "Successful Response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArticleIds"
+                }
+              }
+            }
+          },
+          "503" : {
+            "description" : "503 Internal Error - Server is unavailable to handle request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/epiwatch-api/v1/article/getArticleById/": {
+      "get" : {
+        "tags" : [ "Article" ],
+        "summary" : "Allows user to search for a particular article by Id",
+        "operationId" : "get_article_by_id",
+        "parameters" : [ {
+          "name" : "articleId",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "title" : "ArticleId"
+          },
+          "description": "Article Id can be queried by first retrieving all article Ids on endpoint: /epiwatch-api/v1/article/getArticleIds/. Currently querying an article ID of 0 will return an 'article not found' error"
+        }],
+        "responses" : {
+          "200" : {
+            "description" : "Successful Response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArticleResponse"
+                }
+              }
+            }
+          },
+          "503" : {
+            "description" : "503 Internal Error - No such article Id found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InvalidArticleId"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/epiwatch-api/v1/report/getReportIds/" : {
+      "get" : {
+        "tags" : [ "Report" ],
+        "summary" : "Returns all report IDs in the database",
+        "operationId" : "get_report_ids",
+        "responses" : {
+          "200" : {
+            "description" : "Successful Response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReportIds"
+                }
+              }
+            }
+          },
+          "503" : {
+            "description" : "503 Internal Error - Server is unavailable to handle request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/epiwatch-api/v1/article/getReportById/": {
+      "get" : {
+        "tags" : [ "Report" ],
+        "summary" : "Allows user to search for a particular report by Id",
+        "operationId" : "get_report_by_id",
+        "parameters" : [ {
+          "name" : "reportId",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "title" : "ReportId"
+          },
+          "description": "Allows user to retrieve all report Ids"
+        }],
+        "responses" : {
+          "200" : {
+            "description" : "Successful Response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReportResponse"
+                }
+              }
+            }
+          },
+          "503" : {
+            "description" : "503 Internal Error - No such article Id found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InvalidReportId"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "InvalidReportId": {
+        "title" : "Invalid Report Id",
+        "required" : [ "error type", "error description"],
+        "type" : "object",
+        "properties" : {
+          "error_type" : {
+            "title" : "error_type",
+            "type" : "integer"
+          },
+          "error_description" : {
+            "title" : "error_description",
+            "type" : "string"
+          }
+        }
+      },
+      "InternalServerError": {
+        "title" : "Internal Server  Error",
+        "required" : [ "error type", "error description"],
+        "type" : "object",
+        "properties" : {
+          "error_type" : {
+            "title" : "error_type",
+            "type" : "integer"
+          },
+          "error_description" : {
+            "title" : "error_description",
+            "type" : "string"
+          }
+        }
+      },
+      "InvalidArticleId": {
+        "title" : "Invalid Article Id",
+        "required" : [ "error type", "error description"],
+        "type" : "object",
+        "properties" : {
+          "error_type" : {
+            "title" : "error_type",
+            "type" : "integer"
+          },
+          "error_description" : {
+            "title" : "error_description",
+            "type" : "string"
+          }
+        }
+      },
+      "InvalidTimePeriodError" : {
+        "title" : "Invalid Time Period Error",
+        "required" : [ "error type", "error description"],
+        "type" : "object",
+        "properties" : {
+          "error_type" : {
+            "title" : "error_type",
+            "type" : "integer"
+          },
+          "error_description" : {
+            "title" : "error_description",
+            "type" : "string"
+          }
+        }
+      },
+      "InvalidLocationError" : {
+        "title" : "Invalid Location Error",
+        "required" : [ "error type", "error description"],
+        "type" : "object",
+        "properties" : {
+          "error_type" : {
+            "title" : "error_type",
+            "type" : "integer"
+          },
+          "error_description" : {
+            "title" : "error_description",
+            "type" : "string"
+          }
+        }
+      },
+      "HTTPValidationError" : {
+        "title" : "HTTPValidationError",
+        "type" : "object",
+        "properties" : {
+          "detail" : {
+            "title" : "Detail",
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "ValidationError" : {
+        "title" : "ValidationError",
+        "required" : [ "loc", "msg", "type" ],
+        "type" : "object",
+        "properties" : {
+          "loc" : {
+            "title" : "Location",
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "msg" : {
+            "title" : "Message",
+            "type" : "string"
+          },
+          "type" : {
+            "title" : "Error Type",
+            "type" : "string"
+          }
+        }
+      },
+      "ApiStatusReport" : {
+        "type" : "object",
+        "properties" : {
+          "statusID" : {
+            "type" : "integer"
+          },
+          "description" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ArticleResponse" : {
+        "type" : "object",
+        "properties" : {
+          "url" : {
+            "type" : "string"
+          },
+          "headline" : {
+            "type" : "string"
+          },
+          "main_text" : {
+            "type" : "string"
+          },
+          "keyword" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ArticleResponse_keyword"
+            }
+          },
+          "reports" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ReportResponse"
+            }
+          }
+        }
+      },
+      "ReportResponse" : {
+        "type" : "object",
+        "properties" : {
+          "disease" : {
+            "type" : "string"
+          },
+          "syndrome" : {
+            "type" : "string"
+          },
+          "event_date" : {
+            "type" : "string"
+          },
+          "location" : {
+            "$ref": "#/components/schemas/LocationObject"
+          }
+        }
+      },
+      "ArticleResponse_keyword" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "example" : null
+      },
+      "LocationObject" : {
+        "type": "object",
+        "properties" : {
+          "country": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      },
+      "ArticleId": {
+        "type": "object",
+        "properties": {
+          "articleId": {
+            "type": "string"
+          }
+        }
+      },
+      "ArticleIds": {
+        "type": "object",
+        "properties": {
+          "articleIds": {
+            "type": "array",
+            "items": {
+              "$ref" : "#/components/schemas/ArticleId"
+            }
+          }
+        }
+      },
+      "ReportId": {
+        "type": "object",
+        "properties": {
+          "reportId": {
+            "type": "string"
+          }
+        }
+      },
+      "ReportIds": {
+        "type": "object",
+        "properties": {
+          "reportIds": {
+            "type": "array",
+            "items": {
+              "$ref" : "#/components/schemas/ReportId"
+            }
+          }
+        }
+      }
+    }
+  }
+}

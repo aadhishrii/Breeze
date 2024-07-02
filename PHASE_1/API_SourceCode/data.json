@@ -1,0 +1,44 @@
+{
+    "events":[
+        {
+            "id": "1",
+            "title": "Race Day",
+            "location": "Melbourne, VIC, Australia",
+            "date": "02/06/2022",
+            "description": "Our annual boys trip to the Formula One at Melbourne. Formula One is the highest class of international racing for open-wheel single-seater formula racing cars.",
+            "venueType": "Outdoors",
+            "itineraryId": "1",
+            "backupId": "2",
+            "going": ["willdahl1@gmail.com", "JaeJeon@gmail.com"],
+            "isPublic": false
+        },
+        {
+            "id": "2",
+            "title": "Beach Party",
+            "location": "St Kilda Beach",
+            "date": "10/02/2022",
+            "description": "Beach Party with the boys.",
+            "venueType": "Outdoors",
+            "isPublic": true
+        }
+    ],
+    "itineraries": [
+        {
+            "id": "1",
+            "title": "The boys F1 trip",
+            "location": "Melbourne, VIC, Australia",
+            "startDate": "02/06/2022",
+            "endDate": "02/06/2022",
+            "description": "Our annual boys trip to the Formula One at Melbourne. Formula One is the highest class of international racing for open-wheel single-seater formula racing cars.",
+            "going": ["willdahl1@gmail.com"]
+        }
+    ],
+    "profiles": [
+        {
+            "name": "William",
+            "email": "willdahl1@gmail.com",
+            "events": ["1", "2"],
+            "itineraries": ["1"]
+        }
+    ]
+}

@@ -1,0 +1,46 @@
+CREATE TYPE venueType AS ENUM ('household', 'business', 'public');
+
+CREATE TYPE environmentType AS ENUM ('indoor', 'outdoor', 'both');
+
+CREATE TABLE profiles (
+    id serial PRIMARY KEY,
+    email varchar(320) NOT NULL UNIQUE,
+    name varchar(100) NOT NULL,
+    image varchar(320) NOT NULL,
+    vaccination boolean
+);
+
+CREATE TABLE itineraries (
+    id serial PRIMARY KEY,
+    owner int REFERENCES profiles(id),
+    description text CHECK (char_length(description) <= 750),
+    departingFrom varchar(100),
+    destination varchar(100),
+    startDate date,
+    endDate date
+);
+
+CREATE TABLE events (
+    id SERIAL PRIMARY KEY,
+    owner int NOT NULL REFERENCES profiles(id),
+    description text CHECK (char_length(description) <= 750),
+    date date NOT NULL,
+    location varchar(100),
+    postcode int CHECK (postcode > 999 and postcode < 10000),
+    venueType venueType,
+    environment environmentType,
+    itineraryId int REFERENCES itineraries(id),
+    backupId int REFERENCES events(id)
+);
+
+CREATE TABLE itinerary_attendance (
+    itinerary int NOT NULL REFERENCES itineraries(id),
+    profile int NOT NULL REFERENCES profiles(id),
+    PRIMARY KEY (profile, itinerary)
+);
+
+CREATE TABLE event_attendance (
+    event int NOT NULL REFERENCES events(id),
+    profile int NOT NULL REFERENCES profiles(id),
+    PRIMARY KEY (profile, event)
+);
